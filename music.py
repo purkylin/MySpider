@@ -6,6 +6,7 @@ from util import session
 from util import log
 import os
 import traceback
+from util import delay
 
 # client = MongoClient("mongodb://purkylin.com:27017")
 # db = client.dev
@@ -35,7 +36,7 @@ def downMusic(url, sid):
 		log.info('Already downloaded')
 		return
 
-	r = session.get(url)
+	r = session.get(url, timeout=30)
 	with open('mp3/%s.mp3' % sid, 'wb') as fp:
 		fp.write(r.content)
 
@@ -84,7 +85,10 @@ class Song:
 
 	def save(self, needDownload=True):
 		if needDownload:
-			self.download()
+			try:
+				self.download()
+			except Exception as e:
+				log.error('May timeout')
 
 		d = self.toJSON()
 		iid = songs.insert_one(d).inserted_id
@@ -118,6 +122,7 @@ def test163():
 
 		song = Song(item['id'], item['name'], item['artists'][0]['name'], item['mp3Url'], t, '163')
 		song.save()
+		delay(1)
 
 
 def clearDB():

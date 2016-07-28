@@ -8,6 +8,7 @@ import requests
 import json
 import traceback
 import logging
+import time
 # from http.cookiejar import LWPCookieJar
 
 import smtplib
@@ -143,3 +144,7 @@ def sendEmail(subject, body):
 		print('发送失败')
 	finally:
 		s.quit()
+
+
+def delay(interval):
+	time.sleep(interval)
